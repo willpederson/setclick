@@ -151,7 +151,7 @@ body {
 <div class="branding">SetClick — Setlist Metronome</div>
 
 <script>
-(async function() {
+(function() {
   const hash = window.location.hash.slice(1);
   if (!hash) {
     document.getElementById('loading').textContent = 'No setlist data found.';
@@ -163,32 +163,11 @@ body {
     // URL-safe base64 -> standard base64
     let b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
     while (b64.length % 4) b64 += '=';
-    const compressed = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-
-    // Decompress zlib
-    const ds = new DecompressionStream('deflate');
-    const writer = ds.writable.getWriter();
-    writer.write(compressed);
-    writer.close();
-    const reader = ds.readable.getReader();
-    const chunks = [];
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-    }
-    const blob = new Blob(chunks);
-    const json = await blob.text();
+    const json = atob(b64);
     data = JSON.parse(json);
   } catch(e) {
-    // Fallback: try plain base64 (uncompressed)
-    try {
-      const json = atob(hash);
-      data = JSON.parse(json);
-    } catch(e2) {
-      document.getElementById('loading').textContent = 'Invalid setlist data.';
-      return;
-    }
+    document.getElementById('loading').textContent = 'Invalid setlist data.';
+    return;
   }
 
   document.title = data.name + ' — SetClick';
