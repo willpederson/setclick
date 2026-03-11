@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SetClick Setlist</title>
+<meta name="description" content="A shared setlist from SetClick — the setlist metronome for gigging drummers.">
+<meta property="og:title" content="SetClick Setlist">
+<meta property="og:description" content="Tap to view and import this setlist into SetClick.">
+<meta property="og:type" content="website">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0E0E12;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+}
+.card {
+  background: linear-gradient(180deg, #1A1A22, #12121A);
+  border: 1px solid rgba(255,140,0,0.25);
+  border-radius: 20px;
+  max-width: 420px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 20px;
+}
+.header {
+  padding: 24px 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-icon {
+  font-size: 28px;
+}
+.header-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+}
+.header-text .meta {
+  font-size: 13px;
+  color: #888;
+  margin-top: 2px;
+}
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 24px;
+}
+.songs {
+  padding: 8px 0;
+}
+.song-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+}
+.song-num {
+  width: 28px;
+  text-align: right;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+.song-info {
+  flex: 1;
+  margin-left: 12px;
+}
+.song-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+.song-detail {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+.song-bpm {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FF8C00;
+  font-variant-numeric: tabular-nums;
+}
+.song-sep {
+  height: 0.5px;
+  background: rgba(255,255,255,0.05);
+  margin-left: 64px;
+  margin-right: 24px;
+}
+.footer {
+  padding: 12px 24px 20px;
+  text-align: right;
+  font-size: 12px;
+  color: rgba(255,140,0,0.5);
+  font-weight: 600;
+}
+.actions {
+  max-width: 420px;
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.btn-open {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  background: #FF8C00;
+  color: #000;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.btn-open:hover { opacity: 0.85; }
+.btn-store {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  background: rgba(255,255,255,0.08);
+  color: #ccc;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 14px;
+  text-decoration: none;
+}
+.loading {
+  color: #666;
+  margin-top: 60px;
+  font-size: 16px;
+}
+.branding {
+  margin-top: 40px;
+  color: #444;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">Loading setlist...</div>
+<div id="card" class="card" style="display:none"></div>
+<div id="actions" class="actions" style="display:none"></div>
+<div class="branding">SetClick — Setlist Metronome</div>
+
+<script>
+(function() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
+    document.getElementById('loading').textContent = 'No setlist data found.';
+    return;
+  }
+
+  let data;
+  try {
+    const json = atob(hash);
+    data = JSON.parse(json);
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Invalid setlist data.';
+    return;
+  }
+
+  document.title = data.name + ' — SetClick';
+
+  const songs = data.songs || [];
+  const totalDuration = songs.reduce((s, song) => s + (song.durationSeconds || 0), 0);
+  const metaParts = [songs.length + ' song' + (songs.length === 1 ? '' : 's')];
+  if (totalDuration > 0) {
+    metaParts.push(Math.floor(totalDuration/60) + 'm ' + (totalDuration%60) + 's');
+  }
+
+  let html = '<div class="header">';
+  html += '<div class="header-icon">🎵</div>';
+  html += '<div class="header-text">';
+  html += '<h1>' + esc(data.name) + '</h1>';
+  html += '<div class="meta">' + metaParts.join(' · ') + '</div>';
+  html += '</div></div>';
+  html += '<div class="divider"></div>';
+  html += '<div class="songs">';
+
+  songs.forEach(function(song, i) {
+    html += '<div class="song-row">';
+    html += '<div class="song-num">' + (i+1) + '</div>';
+    html += '<div class="song-info">';
+    html += '<div class="song-name">' + esc(song.name) + '</div>';
+    const parts = [song.timeSignature || '4/4'];
+    if (song.sections && song.sections.length) parts.push(song.sections.length + ' sections');
+    if (song.durationSeconds > 0) {
+      parts.push(Math.floor(song.durationSeconds/60) + ':' + String(song.durationSeconds%60).padStart(2,'0'));
+    }
+    html += '<div class="song-detail">' + parts.join(' · ') + '</div>';
+    html += '</div>';
+    html += '<div class="song-bpm">' + (song.bpm || 120) + '</div>';
+    html += '</div>';
+    if (i < songs.length - 1) html += '<div class="song-sep"></div>';
+  });
+
+  html += '</div>';
+  html += '<div class="footer">SetClick ♩</div>';
+
+  document.getElementById('loading').style.display = 'none';
+  const card = document.getElementById('card');
+  card.innerHTML = html;
+  card.style.display = 'block';
+
+  // Deep link
+  const deepLink = 'setclick://import?data=' + encodeURIComponent(hash);
+  let actionsHTML = '<a class="btn-open" href="' + deepLink + '">Open in SetClick</a>';
+  actionsHTML += '<a class="btn-store" href="#">Get SetClick on the App Store</a>';
+  const actions = document.getElementById('actions');
+  actions.innerHTML = actionsHTML;
+  actions.style.display = 'flex';
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
