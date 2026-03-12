@@ -8,6 +8,9 @@
 <meta property="og:title" content="SetClick Setlist">
 <meta property="og:description" content="Tap to view and import this setlist into SetClick.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://willpederson.github.io/setclick/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -155,6 +158,10 @@ function renderSetlist(data, shareId) {
 
   // Deep link with share ID
   const deepLink = 'setclick://import?id=' + shareId;
+
+  // Auto-redirect to app after short delay
+  setTimeout(() => { window.location.href = deepLink; }, 800);
+
   let actionsHTML = '<a class="btn-open" href="' + deepLink + '">Open in SetClick</a>';
   actionsHTML += '<a class="btn-store" href="#">Get SetClick on the App Store</a>';
   const actions = document.getElementById('actions');
