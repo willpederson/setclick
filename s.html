@@ -35,112 +35,33 @@ body {
   align-items: center;
   gap: 12px;
 }
-.header-icon {
-  font-size: 28px;
-}
-.header-text h1 {
-  font-size: 22px;
-  font-weight: 700;
-}
-.header-text .meta {
-  font-size: 13px;
-  color: #888;
-  margin-top: 2px;
-}
-.divider {
-  height: 1px;
-  background: rgba(255,255,255,0.08);
-  margin: 0 24px;
-}
-.songs {
-  padding: 8px 0;
-}
-.song-row {
-  display: flex;
-  align-items: center;
-  padding: 12px 24px;
-}
-.song-num {
-  width: 28px;
-  text-align: right;
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-.song-info {
-  flex: 1;
-  margin-left: 12px;
-}
-.song-name {
-  font-size: 15px;
-  font-weight: 600;
-}
-.song-detail {
-  font-size: 11px;
-  color: #666;
-  margin-top: 2px;
-}
-.song-bpm {
-  font-size: 22px;
-  font-weight: 700;
-  color: #FF8C00;
-  font-variant-numeric: tabular-nums;
-}
-.song-sep {
-  height: 0.5px;
-  background: rgba(255,255,255,0.05);
-  margin-left: 64px;
-  margin-right: 24px;
-}
-.footer {
-  padding: 12px 24px 20px;
-  text-align: right;
-  font-size: 12px;
-  color: rgba(255,140,0,0.5);
-  font-weight: 600;
-}
-.actions {
-  max-width: 420px;
-  width: 100%;
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.header-icon { font-size: 28px; }
+.header-text h1 { font-size: 22px; font-weight: 700; }
+.header-text .meta { font-size: 13px; color: #888; margin-top: 2px; }
+.divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0 24px; }
+.songs { padding: 8px 0; }
+.song-row { display: flex; align-items: center; padding: 12px 24px; }
+.song-num { width: 28px; text-align: right; font-size: 14px; color: #666; font-weight: 500; }
+.song-info { flex: 1; margin-left: 12px; }
+.song-name { font-size: 15px; font-weight: 600; }
+.song-detail { font-size: 11px; color: #666; margin-top: 2px; }
+.song-bpm { font-size: 22px; font-weight: 700; color: #FF8C00; font-variant-numeric: tabular-nums; }
+.song-sep { height: 0.5px; background: rgba(255,255,255,0.05); margin-left: 64px; margin-right: 24px; }
+.footer { padding: 12px 24px 20px; text-align: right; font-size: 12px; color: rgba(255,140,0,0.5); font-weight: 600; }
+.actions { max-width: 420px; width: 100%; margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
 .btn-open {
-  display: block;
-  text-align: center;
-  padding: 16px;
-  background: #FF8C00;
-  color: #000;
-  font-size: 17px;
-  font-weight: 700;
-  border-radius: 14px;
-  text-decoration: none;
-  transition: opacity 0.2s;
+  display: block; text-align: center; padding: 16px;
+  background: #FF8C00; color: #000; font-size: 17px; font-weight: 700;
+  border-radius: 14px; text-decoration: none; transition: opacity 0.2s;
 }
 .btn-open:hover { opacity: 0.85; }
 .btn-store {
-  display: block;
-  text-align: center;
-  padding: 14px;
-  background: rgba(255,255,255,0.08);
-  color: #ccc;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 14px;
-  text-decoration: none;
+  display: block; text-align: center; padding: 14px;
+  background: rgba(255,255,255,0.08); color: #ccc; font-size: 15px; font-weight: 500;
+  border-radius: 14px; text-decoration: none;
 }
-.loading {
-  color: #666;
-  margin-top: 60px;
-  font-size: 16px;
-}
-.branding {
-  margin-top: 40px;
-  color: #444;
-  font-size: 13px;
-}
+.loading { color: #666; margin-top: 60px; font-size: 16px; }
+.branding { margin-top: 40px; color: #444; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -150,26 +71,45 @@ body {
 <div id="actions" class="actions" style="display:none"></div>
 <div class="branding">SetClick — Setlist Metronome</div>
 
-<script>
-(function() {
-  const hash = window.location.hash.slice(1);
-  if (!hash) {
-    document.getElementById('loading').textContent = 'No setlist data found.';
-    return;
-  }
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
-  let data;
+const app = initializeApp({
+  apiKey: "AIzaSyDKEKtA6Ql8bq2Agi_Zty6RMnCNytnS3Pk",
+  authDomain: "tpusa-humble.firebaseapp.com",
+  projectId: "tpusa-humble",
+  storageBucket: "tpusa-humble.firebasestorage.app",
+  messagingSenderId: "879561049702",
+  appId: "1:879561049702:web:41ca1a611fdb350b6a0fa7",
+});
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const shareId = params.get('id');
+
+if (!shareId) {
+  document.getElementById('loading').textContent = 'No setlist data found.';
+} else {
+  loadSetlist(shareId);
+}
+
+async function loadSetlist(id) {
   try {
-    // URL-safe base64 -> standard base64
-    let b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
-    while (b64.length % 4) b64 += '=';
-    const json = atob(b64);
-    data = JSON.parse(json);
+    const snap = await getDoc(doc(db, 'setclick_shares', id));
+    if (!snap.exists()) {
+      document.getElementById('loading').textContent = 'Setlist not found or expired.';
+      return;
+    }
+    const raw = snap.data().setlist;
+    const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    renderSetlist(data, id);
   } catch(e) {
-    document.getElementById('loading').textContent = 'Invalid setlist data.';
-    return;
+    document.getElementById('loading').textContent = 'Failed to load setlist.';
   }
+}
 
+function renderSetlist(data, shareId) {
   document.title = data.name + ' — SetClick';
 
   const songs = data.songs || [];
@@ -180,10 +120,10 @@ body {
   }
 
   let html = '<div class="header">';
-  html += '<div class="header-icon">🎵</div>';
+  html += '<div class="header-icon">\uD83C\uDFB5</div>';
   html += '<div class="header-text">';
   html += '<h1>' + esc(data.name) + '</h1>';
-  html += '<div class="meta">' + metaParts.join(' · ') + '</div>';
+  html += '<div class="meta">' + metaParts.join(' \u00B7 ') + '</div>';
   html += '</div></div>';
   html += '<div class="divider"></div>';
   html += '<div class="songs">';
@@ -198,7 +138,7 @@ body {
     if (song.durationSeconds > 0) {
       parts.push(Math.floor(song.durationSeconds/60) + ':' + String(song.durationSeconds%60).padStart(2,'0'));
     }
-    html += '<div class="song-detail">' + parts.join(' · ') + '</div>';
+    html += '<div class="song-detail">' + parts.join(' \u00B7 ') + '</div>';
     html += '</div>';
     html += '<div class="song-bpm">' + (song.bpm || 120) + '</div>';
     html += '</div>';
@@ -206,27 +146,27 @@ body {
   });
 
   html += '</div>';
-  html += '<div class="footer">SetClick ♩</div>';
+  html += '<div class="footer">SetClick \u266A</div>';
 
   document.getElementById('loading').style.display = 'none';
   const card = document.getElementById('card');
   card.innerHTML = html;
   card.style.display = 'block';
 
-  // Deep link — pass the same compressed hash
-  const deepLink = 'setclick://import?data=' + encodeURIComponent(hash);
+  // Deep link with share ID
+  const deepLink = 'setclick://import?id=' + shareId;
   let actionsHTML = '<a class="btn-open" href="' + deepLink + '">Open in SetClick</a>';
   actionsHTML += '<a class="btn-store" href="#">Get SetClick on the App Store</a>';
   const actions = document.getElementById('actions');
   actions.innerHTML = actionsHTML;
   actions.style.display = 'flex';
+}
 
-  function esc(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-})();
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
 </script>
 </body>
 </html>
