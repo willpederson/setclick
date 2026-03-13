@@ -267,6 +267,63 @@
         .step-content h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
         .step-content p { color: rgba(255, 255, 255, 0.45); font-size: 15px; line-height: 1.6; }
 
+        .screenshots {
+            padding: 120px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .screenshots-grid {
+            display: flex;
+            gap: 24px;
+            margin-top: 48px;
+            overflow-x: auto;
+            padding: 6px 4px 18px;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .screenshots-grid::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .screenshots-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+        }
+
+        .screenshot-card {
+            flex: 0 0 250px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 32px;
+            padding: 14px;
+            backdrop-filter: blur(20px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            scroll-snap-align: start;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+            border-color: rgba(255, 140, 0, 0.22);
+        }
+
+        .screenshot-card img {
+            width: 100%;
+            display: block;
+            border-radius: 24px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+        }
+
+        .screenshot-label {
+            margin-top: 14px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.72);
+            text-align: center;
+            font-weight: 600;
+        }
+
         .specs {
             padding: 60px 24px 100px;
             max-width: 700px;
@@ -318,8 +375,8 @@
             h1 { font-size: 36px; }
             .subtitle { font-size: 17px; }
             .app-icon { width: 110px; height: 110px; border-radius: 25px; }
-            .screenshot-card { flex-basis: 230px; }
-            .features h2, .how-it-works h2, .specs h2 { font-size: 28px; }
+            .screenshot-card { flex-basis: 220px; }
+            .features h2, .how-it-works h2, .screenshots h2, .specs h2 { font-size: 28px; }
             .spec-list { grid-template-columns: 1fr; }
         }
     </style>
