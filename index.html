@@ -63,7 +63,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #03081a 0%, #0a0c1e 50%, #000005 100%);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(62, 102, 168, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 80% 15%, rgba(255, 140, 0, 0.08) 0%, transparent 30%),
+                linear-gradient(145deg, #05070d 0%, #0a111b 45%, #111827 100%);
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -83,14 +86,15 @@
         .hero::before {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 140, 0, 0.12) 0%, transparent 70%);
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(255, 140, 0, 0.10) 0%, rgba(255, 140, 0, 0.04) 35%, transparent 72%);
             border-radius: 50%;
-            top: 20%;
+            top: 18%;
             left: 50%;
             transform: translateX(-50%);
             pointer-events: none;
+            filter: blur(8px);
         }
 
         .app-icon {
