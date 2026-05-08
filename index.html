@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SetClick — Stage-Ready Click Track for Bands</title>
+    <meta name="description" content="SetClick is a click track and setlist app built for gigging musicians. Create songs with BPM, time signature, and key — then organize them into setlists and go live with beat visualization, haptics, and lock screen controls.">
+    <meta name="keywords" content="metronome app, click track, setlist, band metronome, drummer app, live performance, BPM, iOS metronome, gig tool, stage metronome">
+    <meta name="author" content="Will Pederson">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://willpederson.github.io/setclick/">
+
+    <meta property="og:title" content="SetClick — Stage-Ready Click Track for Bands">
+    <meta property="og:description" content="Build your song library, organize setlists, and go live with beat visualization, haptics, and lock screen controls.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://willpederson.github.io/setclick">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SetClick — Stage-Ready Click Track for Bands">
+    <meta name="twitter:description" content="Build your song library, organize setlists, and go live with beat visualization and haptics.">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SetClick",
+        "applicationCategory": "MusicApplication",
+        "operatingSystem": "iOS",
+        "description": "SetClick is a click track and setlist manager for live musicians. Create songs with BPM, time signature, key, subdivisions, and click sound. Organize songs into setlists and perform with a live mode featuring beat ring visualization, haptic feedback, auto-advance, and lock screen controls.",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Will Pederson"
+        },
+        "softwareVersion": "1.0.0",
+        "datePublished": "2026-03",
+        "featureList": [
+            "Song library with BPM, time signature, key, and click settings",
+            "Setlist management for gig organization",
+            "Live Mode with beat ring visualization",
+            "4 click sounds: Classic, Woodblock, Beep, Hi-Hat",
+            "Voice countdown during count-in",
+            "Haptic feedback on each beat",
+            "Lock screen and Now Playing controls",
+            "Count-off only mode for silent performance",
+            "Tap tempo",
+            "Auto-advance with song duration timers",
+            "Import and export setlists as JSON",
+            "Background audio playback",
+            "Time signatures: 2/4, 3/4, 4/4, 5/4, 6/8, 7/8",
+            "Subdivisions: Quarter, Eighth, Triplet",
+            "20-300 BPM range"
+        ]
+    }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(62, 102, 168, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 80% 15%, rgba(255, 140, 0, 0.08) 0%, transparent 30%),
+                linear-gradient(145deg, #05070d 0%, #0a111b 45%, #111827 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 60px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(255, 140, 0, 0.10) 0%, rgba(255, 140, 0, 0.04) 35%, transparent 72%);
+            border-radius: 50%;
+            top: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            filter: blur(8px);
+        }
+
+        .app-icon {
+            width: 140px;
+            height: 140px;
+            border-radius: 31px;
+            box-shadow: 0 20px 60px rgba(255, 140, 0, 0.25), 0 0 80px rgba(255, 140, 0, 0.08);
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #ffb366 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+            margin-bottom: 40px;
+            max-width: 520px;
+            line-height: 1.5;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #ff8c00;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 140, 0, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .btn svg { width: 22px; height: 22px; }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        .features {
+            padding: 80px 24px 100px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .features .section-sub {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 17px;
+            margin-bottom: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 140, 0, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon { font-size: 32px; margin-bottom: 16px; }
+        .feature-card h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+        .feature-card p { color: rgba(255, 255, 255, 0.5); font-size: 15px; line-height: 1.6; }
+
+        .how-it-works {
+            padding: 80px 24px 100px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 50px;
+        }
+
+        .step {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 140, 0, 0.15);
+            border: 1px solid rgba(255, 140, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #ff8c00;
+        }
+
+        .step-content h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+        .step-content p { color: rgba(255, 255, 255, 0.45); font-size: 15px; line-height: 1.6; }
+
+        .screenshots {
+            padding: 120px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .screenshots-grid {
+            display: flex;
+            gap: 24px;
+            margin-top: 48px;
+            overflow-x: auto;
+            padding: 6px 4px 18px;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .screenshots-grid::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .screenshots-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+        }
+
+        .screenshot-card {
+            flex: 0 0 250px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 32px;
+            padding: 14px;
+            backdrop-filter: blur(20px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            scroll-snap-align: start;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+            border-color: rgba(255, 140, 0, 0.22);
+        }
+
+        .screenshot-card img {
+            width: 100%;
+            display: block;
+            border-radius: 24px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+        }
+
+        .screenshot-label {
+            margin-top: 14px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.72);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .specs {
+            padding: 60px 24px 100px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .specs h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .spec-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .spec-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .spec-item .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 6px;
+        }
+
+        .spec-item .value { font-size: 16px; font-weight: 600; }
+
+        footer {
+            text-align: center;
+            padding: 40px 24px 60px;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer a { color: rgba(255, 255, 255, 0.4); text-decoration: none; }
+        footer a:hover { color: #ff8c00; }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 36px; }
+            .subtitle { font-size: 17px; }
+            .app-icon { width: 110px; height: 110px; border-radius: 25px; }
+            .screenshot-card { flex-basis: 220px; }
+            .features h2, .how-it-works h2, .screenshots h2, .specs h2 { font-size: 28px; }
+            .spec-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <img src="icon.png" alt="SetClick App Icon" class="app-icon">
+        <h1>SetClick</h1>
+        <p class="subtitle">The click track built for the stage. Create songs, build setlists, and go live with beat visualization, haptics, and lock screen controls.</p>
+        <div class="cta-buttons">
+            <a href="#" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                Download on the App Store
+            </a>
+        </div>
+        <p style="margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.3);">Available for iPhone</p>
+        <div class="scroll-hint">↓ Learn more</div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Built for the Gig</h2>
+        <p class="section-sub">SetClick isn't just a metronome — it's your entire click track workflow. Songs, setlists, and a live mode designed for real performance.</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>Song Library</h3>
+                <p>Store every song with its BPM, time signature, key, subdivision, click sound, and performance notes. Your whole repertoire in one place.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Setlist Manager</h3>
+                <p>Drag songs into setlists for each gig. Duplicate, reorder, and export — so your whole band stays on the same page.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔴</div>
+                <h3>Live Mode</h3>
+                <p>Full-screen performance view with a beat ring, BPM display, song progress, and next-song preview. Built to glance at on a dark stage.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗣️</div>
+                <h3>Voice Count-In</h3>
+                <p>Spoken beat numbers during count-in — "One, two, three, four" — so the whole band knows exactly when to come in.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🥁</div>
+                <h3>4 Click Sounds</h3>
+                <p>Classic tick, woodblock, digital beep, or hi-hat. Each one synthesized with realistic attack and decay — no samples.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📳</div>
+                <h3>Haptic Feedback</h3>
+                <p>Feel every beat through your phone. Heavy pulse on the downbeat, light tap on the rest. Perfect for in-ear monitoring setups.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔇</div>
+                <h3>Count-Off Only</h3>
+                <p>Get the count-in, then silence. For bands that want the tempo set but prefer to play without a click running the whole song.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⏱️</div>
+                <h3>Auto-Advance</h3>
+                <p>Set song durations and the click auto-stops when time's up. See a live countdown so you always know where you are in the set.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎛️</div>
+                <h3>Lock Screen Controls</h3>
+                <p>Play, pause, skip forward, skip back — all from the lock screen and Now Playing widget. No need to unlock mid-performance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👆</div>
+                <h3>Tap Tempo</h3>
+                <p>Tap to detect BPM on the fly. Great for figuring out a song's tempo by feel — tap a few times and it locks in.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔑</div>
+                <h3>Song Keys</h3>
+                <p>Tag every song with its key — major or minor. Visible in the song list, setlist detail, and live mode at a glance.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📤</div>
+                <h3>Import & Export</h3>
+                <p>Share setlists as JSON files. Export a backup of your entire library, or import one from a bandmate. Zero data lost between devices.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <h3>Add your songs</h3>
+                <p>Create each song with its BPM, time signature, key, click sound, and any performance notes. Tap tempo if you need to find the BPM by feel.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <h3>Build a setlist</h3>
+                <p>Pick your songs, set the order. Each setlist is a self-contained gig plan — duplicate it for tomorrow's show with different songs.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <h3>Hit Live Mode</h3>
+                <p>One tap and you're performing. The beat ring lights up, the count-in starts, haptics kick in. Skip forward and back between songs without leaving the screen.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <h3>Play the gig</h3>
+                <p>Screen stays on, lock screen controls work, audio runs in the background. SetClick stays out of your way and keeps the band locked in.</p>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="screenshots">
+        <div class="section-header">
+            <div class="section-tag">See SetClick in Action</div>
+            <h2>App Store Screenshots</h2>
+            <p>From song setup to live performance, here’s the full SetClick experience.</p>
+        </div>
+        <div class="screenshots-grid">
+            <div class="screenshot-card">
+                <img src="1_setclick.png" alt="SetClick screenshot showing song library">
+                <div class="screenshot-label">Build your complete song library</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="2_setclick.png" alt="SetClick screenshot showing setlists for gigs">
+                <div class="screenshot-label">Organize every setlist</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="3_setclick.png" alt="SetClick screenshot showing song detail controls">
+                <div class="screenshot-label">Dial in every detail</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="4_setclick.png" alt="SetClick screenshot showing stage-ready setlists">
+                <div class="screenshot-label">Stay ready on stage</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="5_setclick.png" alt="SetClick screenshot showing live mode">
+                <div class="screenshot-label">Go live with confidence</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="specs">
+        <h2>At a Glance</h2>
+        <div class="spec-list">
+            <div class="spec-item">
+                <div class="label">BPM Range</div>
+                <div class="value">20 – 300</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Time Signatures</div>
+                <div class="value">2/4, 3/4, 4/4, 5/4, 6/8, 7/8</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Subdivisions</div>
+                <div class="value">Quarter, Eighth, Triplet</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Click Sounds</div>
+                <div class="value">Classic, Woodblock, Beep, Hi-Hat</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Platform</div>
+                <div class="value">iPhone</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Price</div>
+                <div class="value">Free</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Storage</div>
+                <div class="value">100% on-device</div>
+            </div>
+            <div class="spec-item">
+                <div class="label">Version</div>
+                <div class="value">1.0.0</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>SetClick © 2026 Will Pederson</p>
+        <p style="margin-top: 8px;">
+            <a href="privacy.html">Privacy Policy</a> · <a href="mailto:lance.pederson@gmail.com">Support</a>
+        </p>
+    </footer>
+
+</body>
+</html>
